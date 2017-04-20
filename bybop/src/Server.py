@@ -5,8 +5,10 @@ import code
 import readline
 import rlcompleter
 
+
 '''Connect to Drone'''
 sys.path.append('../src')
+
 
 print 'Connecting to drone...'
 from Bybop_Discovery import *
@@ -26,7 +28,7 @@ if not devices:
 device = devices.itervalues().next()
 print 'Connecting to drone!'
 
-d2c_port = 54321
+d2c_port = 54322
 controller_type = "PC_Server"
 controller_name = "Group_Adam_Kevin_Kevin"
 
@@ -34,12 +36,13 @@ controller_name = "Group_Adam_Kevin_Kevin"
 drone = Bybop_Device.create_and_connect(device, d2c_port, controller_type, controller_name)
 drone.dump_state()
 
-print 'Drone battery leve is at ' + str(drone.get_battery())
+print 'Drone battery level is at ' + str(drone.get_battery())
+
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Bind the socket to the port
-server_address = ('localhost', 10000)
+server_address = ('', 4001)
 print >>sys.stderr, 'starting up on %s port %s' % server_address
 sock.bind(server_address)
 # Listen for incoming connections
@@ -56,7 +59,7 @@ while True:
         # Receive the data in small chunks and retransmit it
         while True:
             data = connection.recv(16)
-            choice = int(data)
+            choice = int(data) #Don't send stupid letters
             if choice not in options.keys():
                 print >> sys.stderr, 'not recognized command'
                 connection.sendall('wrong command')
@@ -67,14 +70,25 @@ while True:
             if choice in options.keys():
                 if choice ==1:
                     drone.emergency()
-                    time.sleep(5)
+                    
                 elif choice== 2:
                     drone.take_off()
-                    time.sleep(5)
+                    try:
+                        flying_state = drone.get_state(copy=False).get_value('ardrone3.PilotingState.FlyingStateChanged')['state']
+                    except:
+                        flying_state = None
+                    while flying_state != 2: # 2 is hovering
+                        drone.wait_for('ardrone3.PilotingState.FlyingStateChanged')
+                    try:
+                        flying_state = drone.get_state(copy=False).get_value('ardrone3.PilotingState.FlyingStateChanged')['state']
+                    except:
+                        flying_state = None
                 elif choice ==3: 
                     drone.land()
-                elif choice == 4: 
-                    drone.send_data('ardrone3.Piloting.TakeOff')
+                elif choice ==4: 
+                    drone.send_data('ardrone3.Piloting.PCMD',(0,-50,0,0,0,0)
+                elif choice ==6:
+                    drone.send_data('ardrone3.Piloting.PCMD',(0,50,0,0,0,0)
 
     finally:
         # Clean up the connection
