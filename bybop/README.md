@@ -1,4 +1,8 @@
 # bybop : Bebop Drone control from python
+# Markdown below is copied from N-Bz/bybpop's repo. To have this working on your machine *now* just do the following
+
+
+
 
 An alternate implementation of the ARSDK protocols used by the [Parrot Bebop Drone](https://www.parrot.com/us/drones/parrot-bebop-2) and the [Parrot Mini Drones](http://www.parrot.com/usa/products/minidrones/).
 
