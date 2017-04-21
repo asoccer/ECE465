@@ -73,23 +73,19 @@ while True:
                     
                 elif choice== 2:
                     drone.take_off()
-                    try:
-                        flying_state = drone.get_state(copy=False).get_value('ardrone3.PilotingState.FlyingStateChanged')['state']
-                    except:
-                        flying_state = None
-                    while flying_state != 2: # 2 is hovering
-                        drone.wait_for('ardrone3.PilotingState.FlyingStateChanged')
-                    try:
-                        flying_state = drone.get_state(copy=False).get_value('ardrone3.PilotingState.FlyingStateChanged')['state']
-                    except:
-                        flying_state = None
                 elif choice ==3: 
                     drone.land()
                 elif choice ==4: 
-                    drone.send_data('ardrone3.Piloting.PCMD',(0,-50,0,0,0,0)
+                    drone.send_data('ardrone3.Piloting.PCMD',(0,-50,0,0,0,0))
                 elif choice ==6:
-                    drone.send_data('ardrone3.Piloting.PCMD',(0,50,0,0,0,0)
-
+                    drone.send_data('ardrone3.Piloting.PCMD',(0,50,0,0,0,0))
+                elif choice == 9:
+                    drone.land()
+                    drone.stop()
+            
+    except Exception as e:
+        print e
+        sys.exit(1)
     finally:
         # Clean up the connection
         connection.close()
