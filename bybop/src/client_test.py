@@ -49,7 +49,7 @@ while True:
 	sock.sendall(select)
 
 	if select=='9':
-
+		sock.sendall(select)
 		sock.close()
 
 		sys.exit(1)
